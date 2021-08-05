@@ -7,6 +7,8 @@
 #include <QImage>
 #include <QPixmap>
 #include <QTextEdit>
+#include <QFile>
+#include <QTextStream>
 
 #include "DynamsoftBarcodeReader.h"
 
@@ -27,10 +29,12 @@ public:
 private:
     Ui::MainWindow *ui;
     void *reader;
+    void showImage(const QImage &image, QString fileName);
 
 private slots:
     void openFile();
     void openFolder();
     void listWidgetClicked(QListWidgetItem *item);
+    void exportTemplate();
 };
 #endif // MAINWINDOW_H
