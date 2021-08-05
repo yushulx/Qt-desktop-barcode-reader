@@ -9,6 +9,8 @@
 #include <QTextEdit>
 #include <QFile>
 #include <QTextStream>
+#include <QMessageBox>
+#include <QCloseEvent>
 
 #include "DynamsoftBarcodeReader.h"
 
@@ -26,15 +28,20 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    void closeEvent(QCloseEvent *);
+
 private:
     Ui::MainWindow *ui;
     void *reader;
     void showImage(const QImage &image, QString fileName);
+    void showMessageBox(QString title, QString content);
 
 private slots:
     void openFile();
     void openFolder();
     void listWidgetClicked(QListWidgetItem *item);
     void exportTemplate();
+    void about();
 };
 #endif // MAINWINDOW_H

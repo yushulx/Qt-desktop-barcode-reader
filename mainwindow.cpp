@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
     // Export template.
     connect(ui->actionExport_template, SIGNAL(triggered()), this, SLOT(exportTemplate()));
 
+    // About dialog.
+    connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
+
     // Dynamsoft Barcode Reader
     reader = DBR_CreateInstance();
 }
@@ -117,3 +120,26 @@ void MainWindow::exportTemplate()
         DBR_FreeSettingsString(&pContent);
     }
 }
+
+void MainWindow::about()
+{
+    showMessageBox(tr("About"), tr("<a href='https://www.dynamsoft.com/barcode-reader/overview/'>Dynamsoft Barcode Reader v8.6</a>"));
+}
+
+void MainWindow::showMessageBox(QString title, QString content)
+{
+    QMessageBox::information(this, title, content);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Exit"), tr("Are you sure to quit?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+    if (reply == QMessageBox::Yes) {
+        event->accept();
+    } else {
+        event->ignore();
+    }
+}
+
+
+
