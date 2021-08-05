@@ -27,6 +27,12 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Set license.
     connect(ui->actionEnter_License_Key, SIGNAL(triggered()), this, SLOT(setLicense()));
+
+    // Template load button
+    connect(ui->pushButton_template, SIGNAL(clicked()), this, SLOT(loadTemplate()));
+
+    // Template export button
+    connect(ui->pushButton_export_template, SIGNAL(clicked()), this, SLOT(exportTemplate()));
 }
 
 MainWindow::~MainWindow()
@@ -75,8 +81,45 @@ void MainWindow::listWidgetClicked(QListWidgetItem *item)
 
 void MainWindow::showImage(const QImage &image, QString fileName)
 {
+    ui->textEdit_results->setText("");
     if (!image.isNull()) {
         ui->label->setPixmap(QPixmap::fromImage(image).scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+        /************************
+         * Barcode detection.
+         ************************/ 
+        // Get the template content and initialize the runtime settings.
+        QString content = ui->textEdit_results->toPlainText();
+        char errorMessage[256];
+        DBR_InitRuntimeSettingsWithString(reader, content.toStdString().c_str(), CM_OVERWRITE, errorMessage, 256);
+
+        // Set barcode types.
+        int types = 0, types2 = 0;
+        if (ui->checkBox_code39->isChecked()) {types |= BF_CODE_39;}
+        if (ui->checkBox_code93->isChecked()) {types |= BF_CODE_93;}
+        if (ui->checkBox_code128->isChecked()){ types |= BF_CODE_128;}
+        if (ui->checkBox_codabar->isChecked()){ types |= BF_CODABAR;}
+        if (ui->checkBox_itf->isChecked()){ types |= BF_ITF;}
+        if (ui->checkBox_ean13->isChecked()){ types |= BF_EAN_13;}
+        if (ui->checkBox_ean8->isChecked()){ types |= BF_EAN_8;}
+        if (ui->checkBox_upca->isChecked()){ types |= BF_UPC_A;}
+        if (ui->checkBox_upce->isChecked()){ types |= BF_UPC_E;}
+        if (ui->checkBox_industrial25->isChecked()){ types |= BF_INDUSTRIAL_25;}
+        if (ui->checkBox_qrcode->isChecked()){ types |= BF_QR_CODE;}
+        if (ui->checkBox_pdf417->isChecked()){ types |= BF_PDF417;}
+        if (ui->checkBox_aztec->isChecked()){ types |= BF_AZTEC;}
+        if (ui->checkBox_maxicode->isChecked()){ types |= BF_MAXICODE;}
+        if (ui->checkBox_datamatrix->isChecked()){ types |= BF_DATAMATRIX;}
+        if (ui->checkBox_gs1->isChecked()){ types |= BF_GS1_COMPOSITE;}
+        if (ui->checkBox_patchcode->isChecked()){ types |= BF_PATCHCODE;}
+        if (ui->checkBox_dotcode->isChecked()){ types2 |= BF2_DOTCODE;}
+        if (ui->checkBox_postalcode->isChecked()){ types2 |= BF2_POSTALCODE;}
+        
+        PublicRuntimeSettings settings;
+        DBR_GetRuntimeSettings(reader, &settings);
+        settings.barcodeFormatIds = types;
+        settings.barcodeFormatIds_2 = types2;
+        DBR_UpdateRuntimeSettings(reader, &settings, errorMessage, 256);
 
         int errorCode = DBR_DecodeFile(reader, fileName.toStdString().c_str(), "");
         TextResultArray *handler = NULL;
@@ -84,7 +127,7 @@ void MainWindow::showImage(const QImage &image, QString fileName)
             
         if (handler->resultsCount == 0)
         {
-            printf("No barcode found.\n");
+            ui->textEdit_results->setText("No barcode found.\n");
             DBR_FreeTextResults(&handler);
             return;
         }
@@ -156,3 +199,14 @@ void MainWindow::setLicense()
     }
 }
 
+void MainWindow::loadTemplate()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Barcode Template (*.json)"));
+    QFile file(fileName);
+    if (file.open(QIODevice::ReadOnly)) {
+        QTextStream stream(&file);
+        QString content = stream.readAll();
+        // DBR_LoadSettingsFromStringPtr(reader, content.toStdString().c_str());
+        ui->textEdit_template->setText(content);
+    }
+}

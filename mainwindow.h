@@ -46,5 +46,6 @@ private slots:
     void exportTemplate();
     void about();
     void setLicense();
+    void loadTemplate();
 };
 #endif // MAINWINDOW_H
