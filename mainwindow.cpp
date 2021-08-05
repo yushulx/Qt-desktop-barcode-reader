@@ -83,7 +83,9 @@ void MainWindow::showImage(const QImage &image, QString fileName)
 {
     ui->textEdit_results->setText("");
     if (!image.isNull()) {
-        ui->label->setPixmap(QPixmap::fromImage(image).scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        QPixmap pm = QPixmap::fromImage(image);
+        QPainter painter(&pm);
+        painter.setPen(Qt::red);
 
         /************************
          * Barcode detection.
@@ -145,9 +147,17 @@ void MainWindow::showImage(const QImage &image, QString fileName)
             + "(" + QString::number(localizationResult->x3) + ", " + QString::number(localizationResult->y3) + ") "
             + "(" + QString::number(localizationResult->x4) + ", " + QString::number(localizationResult->y4) + ")\n";
             out += "----------------------------------------------------------------------------------------\n";
+
+            painter.drawLine(localizationResult->x1, localizationResult->y1, localizationResult->x2, localizationResult->y2);
+            painter.drawLine(localizationResult->x2, localizationResult->y2, localizationResult->x3, localizationResult->y3);
+            painter.drawLine(localizationResult->x3, localizationResult->y3, localizationResult->x4, localizationResult->y4);
+            painter.drawLine(localizationResult->x4, localizationResult->y4, localizationResult->x1, localizationResult->y1);
         }
 
         DBR_FreeTextResults(&handler);
+
+        painter.end();
+        ui->label->setPixmap(pm.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
         ui->textEdit_results->setText(out);
     }

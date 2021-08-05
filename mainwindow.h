@@ -13,7 +13,7 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QInputDialog>
-
+#include <QPainter>
 #include "DynamsoftBarcodeReader.h"
 
 using namespace dynamsoft::dbr;
