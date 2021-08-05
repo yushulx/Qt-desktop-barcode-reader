@@ -14,6 +14,8 @@ A desktop barcode reader app built with [Dynamsoft C++ Barcode SDK](https://www.
 
 ## Build and Run
 
+![Qt desktop barcode reader](https://www.dynamsoft.com/blog/wp-content/uploads/2021/08/qt-desktop-barcode-reader.png)
+
 **Windows**
 
 Add `Qt\6.1.2\mingw81_64\bin` and `Qt\Tools\mingw810_64\bin` to system path.

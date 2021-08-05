@@ -7,6 +7,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Dynamsoft Barcode Reader
+    reader = DBR_CreateInstance();
+
     // Open a file.
     connect(ui->actionOpen_File, SIGNAL(triggered()), this, SLOT(openFile()));
 
@@ -22,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     // About dialog.
     connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(about()));
 
-    // Dynamsoft Barcode Reader
-    reader = DBR_CreateInstance();
+    // Set license.
+    connect(ui->actionEnter_License_Key, SIGNAL(triggered()), this, SLOT(setLicense()));
 }
 
 MainWindow::~MainWindow()
@@ -141,5 +144,15 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
-
+void MainWindow::setLicense()
+{
+    QString licenseKey = QInputDialog::getText(this, tr("Enter License Key"), tr("License Key:"));
+    int ret = DBR_InitLicense(reader, licenseKey.toStdString().c_str());
+    if (ret != 0) {
+        showMessageBox(tr("License Key"), tr("License key is invalid."));
+    }
+    else {
+        showMessageBox(tr("License Key"), tr("Dynamsoft Barcode Reader is activated successfully!"));
+    }
+}
 

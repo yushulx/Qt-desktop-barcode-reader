@@ -11,6 +11,8 @@
 #include <QTextStream>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QDebug>
+#include <QInputDialog>
 
 #include "DynamsoftBarcodeReader.h"
 
@@ -43,5 +45,6 @@ private slots:
     void listWidgetClicked(QListWidgetItem *item);
     void exportTemplate();
     void about();
+    void setLicense();
 };
 #endif // MAINWINDOW_H
