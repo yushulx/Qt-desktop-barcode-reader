@@ -19,6 +19,7 @@
 #include <QCameraInfo>
 #include <QAbstractVideoSurface>
 #include <QLabel>
+#include <QDateTime>
 
 #include "DynamsoftCommon.h"
 #include "DynamsoftBarcodeReader.h"

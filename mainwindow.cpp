@@ -122,7 +122,9 @@ void MainWindow::showImage(const QImage &image, QString fileName)
         // Get the template content and initialize the runtime settings.
         QString content = ui->textEdit_results->toPlainText();
         char errorMessage[256];
-        DBR_InitRuntimeSettingsWithString(reader, content.toStdString().c_str(), CM_OVERWRITE, errorMessage, 256);
+        if (!content.isEmpty()) {
+            DBR_InitRuntimeSettingsWithString(reader, content.toStdString().c_str(), CM_OVERWRITE, errorMessage, 256);
+        }
 
         // Set barcode types.
         int types = 0, types2 = 0;
@@ -148,18 +150,24 @@ void MainWindow::showImage(const QImage &image, QString fileName)
         
         PublicRuntimeSettings settings;
         DBR_GetRuntimeSettings(reader, &settings);
+        settings.deblurLevel = 5;
+        settings.expectedBarcodesCount = 0;
         settings.barcodeFormatIds = types;
         settings.barcodeFormatIds_2 = types2;
         DBR_UpdateRuntimeSettings(reader, &settings, errorMessage, 256);
 
+        QDateTime start = QDateTime::currentDateTime();
         int errorCode = DBR_DecodeFile(reader, fileName.toStdString().c_str(), "");
+        QDateTime end = QDateTime::currentDateTime();
         TextResultArray *handler = NULL;
         DBR_GetAllTextResults(reader, &handler);
             
         if (handler->resultsCount == 0)
         {
-            ui->textEdit_results->setText("No barcode found.\n");
+            QString message = "No barcode found. Elapsed time: " + QString::number(start.msecsTo(end)) + "ms\n";
+            ui->textEdit_results->setText(message);
             DBR_FreeTextResults(&handler);
+            ui->label->setPixmap(pm.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
             return;
         }
 
@@ -168,7 +176,7 @@ void MainWindow::showImage(const QImage &image, QString fileName)
         for (int index = 0; index < handler->resultsCount; index++)
         {
             LocalizationResult* localizationResult = results[index]->localizationResult;
-            out += "Index: " + QString::number(index) + "\n";
+            out += "Index: " + QString::number(index) + ", Elapsed time: " + QString::number(start.msecsTo(end)) + "ms\n";
             out += "Barcode format: " + QString(results[index]->barcodeFormatString) + "\n";
             out += "Barcode value: " + QString(results[index]->barcodeText) + "\n";
             out += "Bounding box: (" + QString::number(localizationResult->x1) + ", " + QString::number(localizationResult->y1) + ") "
