@@ -20,20 +20,32 @@
 #include <QAbstractVideoSurface>
 #include <QLabel>
 
+#include "DynamsoftCommon.h"
+#include "DynamsoftBarcodeReader.h"
+
+QT_BEGIN_NAMESPACE
+namespace Ui
+{
+    class MainWindow;
+}
+QT_END_NAMESPACE
+
 // https://www.qtcentre.org/threads/57090-How-could-I-get-the-image-buffer-of-QCamera
 class MyVideoSurface : public QAbstractVideoSurface
 {
     Q_OBJECT
 private:
-    QLabel *label;
     QList<QImage> images;
+    Ui::MainWindow *ui;
+    void *reader;
+    bool is_detecting;
 
 public:
-    MyVideoSurface(QObject *parent = NULL) : QAbstractVideoSurface(parent)
-    {
-    }
+    MyVideoSurface(QObject *parent, Ui::MainWindow *ui, void *reader);
+    ~MyVideoSurface();
 
-    void setLabel(QLabel *label);
+    void setUI(Ui::MainWindow *ui);
+    void reset();
 
     QList<QVideoFrame::PixelFormat>
     supportedPixelFormats(QAbstractVideoBuffer::HandleType type) const;

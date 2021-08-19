@@ -59,5 +59,7 @@ private slots:
     void about();
     void setLicense();
     void loadTemplate();
+    void startCamera();
+    void stopCamera();
 };
 #endif // MAINWINDOW_H

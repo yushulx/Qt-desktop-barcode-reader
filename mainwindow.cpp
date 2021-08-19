@@ -34,20 +34,31 @@ MainWindow::MainWindow(QWidget *parent)
     // Template export button
     connect(ui->pushButton_export_template, SIGNAL(clicked()), this, SLOT(exportTemplate()));
 
+    // Camera button
+    connect(ui->pushButton_open, SIGNAL(clicked()), this, SLOT(startCamera()));
+    connect(ui->pushButton_stop, SIGNAL(clicked()), this, SLOT(stopCamera()));
+
     // Cameras
     QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
-    for( int i = 0; i < cameras.count(); ++i )
-    { 
-        QCameraInfo cameraInfo = cameras.at(i);
-        qDebug() << cameraInfo.deviceName();
-        qDebug() << cameraInfo.description();
-        camera = new QCamera(cameraInfo);
-        surface = new MyVideoSurface(this);
-        surface->setLabel(ui->label);
-        camera->setViewfinder(surface);
-        camera->start();
-        break;
+    if (cameras.size() > 0) 
+    {
+        for( int i = 0; i < cameras.count(); ++i )
+        { 
+            QCameraInfo cameraInfo = cameras.at(i);
+            qDebug() << cameraInfo.deviceName();
+            qDebug() << cameraInfo.description();
+            camera = new QCamera(cameraInfo);
+            surface = new MyVideoSurface(this, ui, reader);
+            camera->setViewfinder(surface);
+            break;
+        }
     }
+    else {
+        ui->pushButton_open->setEnabled(false);
+        ui->pushButton_stop->setEnabled(false);
+    }
+
+    
 }
 
 MainWindow::~MainWindow()
@@ -237,4 +248,15 @@ void MainWindow::loadTemplate()
         // DBR_LoadSettingsFromStringPtr(reader, content.toStdString().c_str());
         ui->textEdit_template->setText(content);
     }
+}
+
+void MainWindow::startCamera()
+{
+    surface->reset();
+    camera->start();
+}
+
+void MainWindow::stopCamera()
+{
+    camera->stop();
 }
