@@ -14,12 +14,22 @@
 #include <QDebug>
 #include <QInputDialog>
 #include <QPainter>
+#include <QCameraViewfinder>
+#include <QCamera>
+#include <QCameraInfo>
+#include <QAbstractVideoSurface>
+#include <QTimer>
+#include "DynamsoftCommon.h"
 #include "DynamsoftBarcodeReader.h"
+#include "myvideosurface.h"
 
 using namespace dynamsoft::dbr;
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -38,6 +48,8 @@ private:
     void *reader;
     void showImage(const QImage &image, QString fileName);
     void showMessageBox(QString title, QString content);
+    QCamera *camera;
+    MyVideoSurface *surface;
 
 private slots:
     void openFile();

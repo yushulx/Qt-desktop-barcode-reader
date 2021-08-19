@@ -33,12 +33,30 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Template export button
     connect(ui->pushButton_export_template, SIGNAL(clicked()), this, SLOT(exportTemplate()));
+
+    // Cameras
+    QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
+    for( int i = 0; i < cameras.count(); ++i )
+    { 
+        QCameraInfo cameraInfo = cameras.at(i);
+        qDebug() << cameraInfo.deviceName();
+        qDebug() << cameraInfo.description();
+        camera = new QCamera(cameraInfo);
+        surface = new MyVideoSurface(this);
+        surface->setLabel(ui->label);
+        camera->setViewfinder(surface);
+        camera->start();
+        break;
+    }
 }
 
 MainWindow::~MainWindow()
 {
+    camera->stop();
     delete ui;
     DBR_DestroyInstance(reader);
+    delete camera;
+    delete surface;
 }
 
 void MainWindow::openFile()
