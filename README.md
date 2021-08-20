@@ -1,5 +1,8 @@
 # Qt Desktop Barcode Reader
 A desktop barcode reader app built with [Dynamsoft C++ Barcode SDK](https://www.dynamsoft.com/barcode-reader/overview/) and [Qt](https://www.qt.io/).
+
+## Trial License
+Get a [trial license](https://www.dynamsoft.com/customer/license/trialLicense?product=dbr) to make the barcode recognition work.
  
 ## Download
 - Qt
