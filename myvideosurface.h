@@ -1,24 +1,13 @@
 #ifndef MYVIDEOSURFACE_H
 #define MYVIDEOSURFACE_H
 
-#include <QMainWindow>
-#include <QFileDialog>
-#include <QListWidgetItem>
 #include <QImage>
 #include <QPixmap>
-#include <QTextEdit>
-#include <QFile>
-#include <QTextStream>
-#include <QMessageBox>
-#include <QCloseEvent>
 #include <QDebug>
-#include <QInputDialog>
 #include <QPainter>
-#include <QCameraViewfinder>
 #include <QCamera>
 #include <QCameraInfo>
 #include <QAbstractVideoSurface>
-#include <QLabel>
 #include <QDateTime>
 
 #include "DynamsoftCommon.h"
@@ -45,7 +34,6 @@ public:
     MyVideoSurface(QObject *parent, Ui::MainWindow *ui, void *reader);
     ~MyVideoSurface();
 
-    void setUI(Ui::MainWindow *ui);
     void reset();
 
     QList<QVideoFrame::PixelFormat>

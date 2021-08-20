@@ -137,8 +137,3 @@ bool MyVideoSurface::present(const QVideoFrame &frame)
     }
     return false;
 }
-
-void MyVideoSurface::setUI(Ui::MainWindow *ui)
-{
-    this->ui = ui;
-}
