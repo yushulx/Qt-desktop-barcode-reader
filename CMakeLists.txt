@@ -12,53 +12,30 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (CMAKE_HOST_WIN32)
-    link_directories("${PROJECT_SOURCE_DIR}/platform/windows/bin/") 
+    link_directories("${PROJECT_SOURCE_DIR}/platform/windows/lib/") 
 elseif(CMAKE_HOST_UNIX)
     link_directories("${PROJECT_SOURCE_DIR}/platform/linux/")
 endif()
 include_directories("${PROJECT_SOURCE_DIR}/include/")
 
-find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
-find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt5MultimediaWidgets REQUIRED)
 
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        myvideosurface.h
+        myvideosurface.cpp
 )
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(${PROJECT_NAME}
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-    )
-else()
-    if(ANDROID)
-        add_library(${PROJECT_NAME} SHARED
-            ${PROJECT_SOURCES}
-        )
-    else()
-        add_executable(${PROJECT_NAME}
-            ${PROJECT_SOURCES}
-        )
-    endif()
-endif()
+add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
 if (CMAKE_HOST_WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets "DynamsoftBarcodeReaderx64")    
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::MultimediaWidgets "DBRx64")    
 elseif(CMAKE_HOST_UNIX)
-    target_link_libraries(${PROJECT_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets "DynamsoftBarcodeReader")
-endif()
-
-set_target_properties(${PROJECT_NAME} PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-)
-
-if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(${PROJECT_NAME})
+    target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets Qt5::MultimediaWidgets "DynamsoftBarcodeReader")
 endif()
 
 if(CMAKE_HOST_WIN32)
