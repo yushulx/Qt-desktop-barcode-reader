@@ -14,7 +14,7 @@ A desktop barcode reader app built with [Dynamsoft C++ Barcode SDK](https://www.
 
 ## Build and Run
 
-![Qt desktop barcode reader](https://www.dynamsoft.com/blog/wp-content/uploads/2021/08/qt-desktop-barcode-reader.png)
+![Qt desktop barcode reader](https://www.dynamsoft.com/codepool/img/2021/08/barcode-scanner-webcam-qcamera.png)
 
 **Windows**
 
