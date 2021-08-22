@@ -13,6 +13,10 @@
 #include "DynamsoftCommon.h"
 #include "DynamsoftBarcodeReader.h"
 
+#include "work.h"
+
+class Work;
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -25,16 +29,18 @@ class MyVideoSurface : public QAbstractVideoSurface
 {
     Q_OBJECT
 private:
-    QList<QImage> images;
     Ui::MainWindow *ui;
     void *reader;
     bool is_detecting;
+    Work* worker;
 
 public:
     MyVideoSurface(QObject *parent, Ui::MainWindow *ui, void *reader);
     ~MyVideoSurface();
 
     void reset();
+    void pause();
+    void setWorker(Work* worker);
 
     QList<QVideoFrame::PixelFormat>
     supportedPixelFormats(QAbstractVideoBuffer::HandleType type) const;
