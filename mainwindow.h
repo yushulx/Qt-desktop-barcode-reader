@@ -20,9 +20,11 @@
 #include <QAbstractVideoSurface>
 #include <QTimer>
 #include <QDateTime>
+#include <QThread>
 #include "DynamsoftCommon.h"
 #include "DynamsoftBarcodeReader.h"
 #include "myvideosurface.h"
+#include "work.h"
 
 using namespace dynamsoft::dbr;
 
@@ -32,6 +34,7 @@ namespace Ui
     class MainWindow;
 }
 QT_END_NAMESPACE
+
 
 class MainWindow : public QMainWindow
 {
@@ -51,6 +54,8 @@ private:
     void showMessageBox(QString title, QString content);
     QCamera *camera;
     MyVideoSurface *surface;
+    Work* worker;
+    QThread* thread;
 
 private slots:
     void openFile();
@@ -62,5 +67,6 @@ private slots:
     void loadTemplate();
     void startCamera();
     void stopCamera();
+    void updateUI(QString results);  
 };
 #endif // MAINWINDOW_H

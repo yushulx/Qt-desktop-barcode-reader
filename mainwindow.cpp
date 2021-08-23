@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
             qDebug() << cameraInfo.deviceName();
             qDebug() << cameraInfo.description();
             camera = new QCamera(cameraInfo);
-            surface = new MyVideoSurface(this, ui, reader);
+            surface = new MyVideoSurface(this, ui, reader, camera);
             camera->setViewfinder(surface);
             break;
         }
@@ -228,6 +228,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Exit"), tr("Are you sure to quit?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (reply == QMessageBox::Yes) {
+        stopCamera();
         event->accept();
     } else {
         event->ignore();
@@ -261,10 +262,28 @@ void MainWindow::loadTemplate()
 void MainWindow::startCamera()
 {
     surface->reset();
+
+    thread = new QThread(this);
+    worker = new Work(ui, reader, surface); // Do not set a parent. The object cannot be moved if it has a parent. 
+    worker->moveToThread(thread);
+    connect(thread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+    connect(thread, SIGNAL(started()), worker, SLOT(detectBarcode()));
+    connect(worker, SIGNAL(update(QString)), this, SLOT(updateUI(QString)));
+    thread->start();   
+
+    surface->setWorker(worker);
+
     camera->start();
 }
 
 void MainWindow::stopCamera()
 {
+    worker->stop();
     camera->stop();
 }
+
+void MainWindow::updateUI(QString results)
+{
+    worker->updateUI(results);
+}
+

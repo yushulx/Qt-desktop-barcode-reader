@@ -28,6 +28,10 @@ set(PROJECT_SOURCES
         mainwindow.ui
         myvideosurface.h
         myvideosurface.cpp
+        work.h
+        work.cpp
+        barcodeinfo.h
+        barcodeinfo.cpp
 )
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
