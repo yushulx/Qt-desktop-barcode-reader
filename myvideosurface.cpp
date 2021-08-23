@@ -1,10 +1,11 @@
 #include "myvideosurface.h"
 #include "./ui_mainwindow.h"
 
-MyVideoSurface::MyVideoSurface(QObject *parent, Ui::MainWindow *ui, void *reader) : QAbstractVideoSurface(parent)
+MyVideoSurface::MyVideoSurface(QObject *parent, Ui::MainWindow *ui, void *reader, QCamera *camera) : QAbstractVideoSurface(parent)
 {
     this->ui = ui;
     this->reader = reader;
+    this->camera = camera;
     this->is_detecting = true;
 }
 
@@ -50,7 +51,48 @@ bool MyVideoSurface::present(const QVideoFrame &frame)
         if (worker)
         {
             worker->appendFrame(cp);
+            std::vector<BarcodeInfo> info;
+            mutex.lock();
+            if (queue.size() > 0)
+            {
+                info = queue.back();
+                queue.pop_back();
+            } 
+            mutex.unlock();
+            
             QPixmap pm = QPixmap::fromImage(cp);
+            QString out = "";
+            if (info.size() > 0)
+            {
+                if (ui->checkBox_autostop->isChecked()) pause();
+
+                QPainter painter(&pm);
+                painter.setPen(Qt::red);
+
+                for (int index = 0; index < info.size(); index++)
+                {
+                    BarcodeInfo barcodeInfo = info.at(index);
+                    out += "Index: " + QString::number(index) + ", Elapsed time: " + barcodeInfo.decodingTime + "ms\n";
+                    out += "Barcode format: " + barcodeInfo.format + "\n";
+                    out += "Barcode value: " + barcodeInfo.text + "\n";
+                    out += "Bounding box: (" + QString::number(barcodeInfo.x1) + ", " + QString::number(barcodeInfo.y1) + ") "
+                    + "(" + QString::number(barcodeInfo.x2) + ", " + QString::number(barcodeInfo.y2) + ") "
+                    + "(" + QString::number(barcodeInfo.x3) + ", " + QString::number(barcodeInfo.y3) + ") "
+                    + "(" + QString::number(barcodeInfo.x4) + ", " + QString::number(barcodeInfo.y4) + ")\n";
+                    out += "----------------------------------------------------------------------------------------\n";
+
+                    painter.drawLine(barcodeInfo.x1, barcodeInfo.y1, barcodeInfo.x2, barcodeInfo.y2);
+                    painter.drawLine(barcodeInfo.x2, barcodeInfo.y2, barcodeInfo.x3, barcodeInfo.y3);
+                    painter.drawLine(barcodeInfo.x3, barcodeInfo.y3, barcodeInfo.x4, barcodeInfo.y4);
+                    painter.drawLine(barcodeInfo.x4, barcodeInfo.y4, barcodeInfo.x1, barcodeInfo.y1);
+                }
+                painter.end();
+            }
+            else
+            {
+                out = "No barcode detected";
+            }
+            ui->textEdit_results->setText(out);
             ui->label->setPixmap(pm.scaled(ui->label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         }
         else 
@@ -156,4 +198,15 @@ void MyVideoSurface::setWorker(Work* worker)
 void MyVideoSurface::pause()
 {
     is_detecting = false;
+    worker->stop();
+    camera->stop();
+    queue.clear();
+}
+
+void MyVideoSurface::appendResult(std::vector<BarcodeInfo> &result)
+{
+    mutex.lock();
+    if (queue.size() == 4) queue.clear();
+    queue.push_back(result);
+    mutex.unlock();
 }

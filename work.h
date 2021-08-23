@@ -9,13 +9,16 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QList>
+#include <vector>
 
 #include "DynamsoftCommon.h"
 #include "DynamsoftBarcodeReader.h"
 
 #include "myvideosurface.h"
+#include "barcodeinfo.h"
 
 class MyVideoSurface;
+class BarcodeInfo;
 
 QT_BEGIN_NAMESPACE
 namespace Ui

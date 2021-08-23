@@ -73,30 +73,31 @@ void Work::detectBarcode()
             QDateTime end = QDateTime::currentDateTime();
             TextResultArray *handler = NULL;
             DBR_GetAllTextResults(reader, &handler);
-            QString out = "";
+            std::vector<BarcodeInfo> out;
             TextResult **results = handler->results;
             for (int index = 0; index < handler->resultsCount; index++)
             {
+                BarcodeInfo info;
                 LocalizationResult* localizationResult = results[index]->localizationResult;
-                out += "Index: " + QString::number(index) + ", Elapsed time: " + QString::number(start.msecsTo(end)) + "ms\n";
-                out += "Barcode format: " + QString(results[index]->barcodeFormatString) + "\n";
-                out += "Barcode value: " + QString(results[index]->barcodeText) + "\n";
-                out += "Bounding box: (" + QString::number(localizationResult->x1) + ", " + QString::number(localizationResult->y1) + ") "
-                + "(" + QString::number(localizationResult->x2) + ", " + QString::number(localizationResult->y2) + ") "
-                + "(" + QString::number(localizationResult->x3) + ", " + QString::number(localizationResult->y3) + ") "
-                + "(" + QString::number(localizationResult->x4) + ", " + QString::number(localizationResult->y4) + ")\n";
-                out += "----------------------------------------------------------------------------------------\n";
-
-                // painter.drawLine(localizationResult->x1, localizationResult->y1, localizationResult->x2, localizationResult->y2);
-                // painter.drawLine(localizationResult->x2, localizationResult->y2, localizationResult->x3, localizationResult->y3);
-                // painter.drawLine(localizationResult->x3, localizationResult->y3, localizationResult->x4, localizationResult->y4);
-                // painter.drawLine(localizationResult->x4, localizationResult->y4, localizationResult->x1, localizationResult->y1);
+                info.format = results[index]->barcodeFormatString;
+                info.text = results[index]->barcodeText;
+                info.decodingTime = QString::number(start.msecsTo(end));
+                info.x1 = localizationResult->x1;
+                info.y1 = localizationResult->y1;
+                info.x2 = localizationResult->x2;
+                info.y2 = localizationResult->y2;
+                info.x3 = localizationResult->x3;
+                info.y3 = localizationResult->y3;
+                info.x4 = localizationResult->x4;
+                info.y4 = localizationResult->y4;
+                out.push_back(info);
             }
             DBR_FreeTextResults(&handler);
-            emit update(out);
+            surface->appendResult(out);
         }
     }
     
+    qDebug() << "Work::detectBarcode() exit";
 }
 
 void Work::appendFrame(const QImage &frame)

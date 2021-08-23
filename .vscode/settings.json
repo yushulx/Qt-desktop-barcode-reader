@@ -1,6 +1,12 @@
 {
     "cmake.generator": "MinGW Makefiles",
     "files.associations": {
-        "qdebug": "cpp"
+        "qdebug": "cpp",
+        "qwaitcondition": "cpp",
+        "vector": "cpp",
+        "array": "cpp",
+        "string_view": "cpp",
+        "initializer_list": "cpp",
+        "utility": "cpp"
     },
 }

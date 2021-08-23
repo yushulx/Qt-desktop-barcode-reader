@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
             qDebug() << cameraInfo.deviceName();
             qDebug() << cameraInfo.description();
             camera = new QCamera(cameraInfo);
-            surface = new MyVideoSurface(this, ui, reader);
+            surface = new MyVideoSurface(this, ui, reader, camera);
             camera->setViewfinder(surface);
             break;
         }
