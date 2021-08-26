@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    setAcceptDrops(true);
     // Dynamsoft Barcode Reader
     reader = DBR_CreateInstance();
 
@@ -70,17 +70,23 @@ MainWindow::~MainWindow()
     delete surface;
 }
 
+void MainWindow::loadFile(QString fileName)
+{
+    // Add to list
+    ui->listWidget->addItem(fileName);
+    ui->statusbar->showMessage(fileName);
+
+    // Load the image file to QImage
+    QImage image(fileName);
+    showImage(image, fileName);
+}
+
 void MainWindow::openFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), "", tr("Barcode images (*)"));
-    if (!fileName.isEmpty()) {
-        // Add to list
-        ui->listWidget->addItem(fileName);
-        ui->statusbar->showMessage(fileName);
-
-        // Load the image file to QImage
-        QImage image(fileName);
-        showImage(image, fileName);
+    if (!fileName.isEmpty()) 
+    {
+        loadFile(fileName);    
     }
 }
 
@@ -150,8 +156,8 @@ void MainWindow::showImage(const QImage &image, QString fileName)
         
         PublicRuntimeSettings settings;
         DBR_GetRuntimeSettings(reader, &settings);
-        settings.deblurLevel = 5;
-        settings.expectedBarcodesCount = 0;
+        // settings.deblurLevel = 5;
+        // settings.expectedBarcodesCount = 0;
         settings.barcodeFormatIds = types;
         settings.barcodeFormatIds_2 = types2;
         DBR_UpdateRuntimeSettings(reader, &settings, errorMessage, 256);
@@ -287,3 +293,18 @@ void MainWindow::updateUI(QString results)
     worker->updateUI(results);
 }
 
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    event->acceptProposedAction();
+}
+
+void MainWindow::dropEvent(QDropEvent *event)
+{
+    const QMimeData *mimeData = event->mimeData();
+    foreach (QUrl url, event->mimeData()->urls()) 
+    {
+        QString fileName = url.toLocalFile();
+        loadFile(fileName);
+    }
+    event->acceptProposedAction();
+}

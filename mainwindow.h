@@ -18,9 +18,10 @@
 #include <QCamera>
 #include <QCameraInfo>
 #include <QAbstractVideoSurface>
-#include <QTimer>
 #include <QDateTime>
 #include <QThread>
+#include <QMimeData>
+#include <QUrl>
 #include "DynamsoftCommon.h"
 #include "DynamsoftBarcodeReader.h"
 #include "myvideosurface.h"
@@ -46,6 +47,8 @@ public:
 
 protected:
     void closeEvent(QCloseEvent *);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private:
     Ui::MainWindow *ui;
@@ -56,6 +59,7 @@ private:
     MyVideoSurface *surface;
     Work* worker;
     QThread* thread;
+    void loadFile(QString fileName);
 
 private slots:
     void openFile();
