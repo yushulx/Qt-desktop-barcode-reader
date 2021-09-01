@@ -234,7 +234,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     QMessageBox::StandardButton reply = QMessageBox::question(this, tr("Exit"), tr("Are you sure to quit?"), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
     if (reply == QMessageBox::Yes) {
-        stopCamera();
+        // stopCamera();
         event->accept();
     } else {
         event->ignore();
