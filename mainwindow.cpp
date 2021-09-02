@@ -284,10 +284,20 @@ void MainWindow::startCamera()
 
 void MainWindow::stopCamera()
 {
-    worker->stop();
-    camera->stop();
-    thread->quit();
-    thread->wait();
+    if (worker) worker->stop();
+    if (camera && camera->state() == QCamera::ActiveState) 
+    {
+        qDebug() << camera->state() << endl;
+        camera->stop();
+    } 
+    if (thread)
+    {
+        thread->quit();
+        thread->wait();
+    }
+
+    worker = NULL;
+    thread = NULL;
 }
 
 void MainWindow::updateUI(QString results)
