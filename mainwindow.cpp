@@ -7,6 +7,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     setAcceptDrops(true);
+
+    worker = NULL;
+    thread = NULL;
+    camera = NULL;
+    
     // Dynamsoft Barcode Reader
     reader = DBR_CreateInstance();
 
