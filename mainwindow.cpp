@@ -285,8 +285,9 @@ void MainWindow::startCamera()
 void MainWindow::stopCamera()
 {
     worker->stop();
-    delete worker;
     camera->stop();
+    thread->quit();
+    thread->wait();
 }
 
 void MainWindow::updateUI(QString results)
