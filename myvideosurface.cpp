@@ -16,6 +16,7 @@ MyVideoSurface::~MyVideoSurface()
 void MyVideoSurface::reset()
 {
     this->is_detecting = true;
+    this->queue.clear();
 }
 
 QList<QVideoFrame::PixelFormat> MyVideoSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType type) const
