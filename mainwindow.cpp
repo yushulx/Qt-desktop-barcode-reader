@@ -131,7 +131,7 @@ void MainWindow::showImage(const QImage &image, QString fileName)
          * Barcode detection.
          ************************/ 
         // Get the template content and initialize the runtime settings.
-        QString content = ui->textEdit_results->toPlainText();
+        QString content = ui->textEdit_template->toPlainText();
         char errorMessage[256];
         if (!content.isEmpty()) {
             DBR_InitRuntimeSettingsWithString(reader, content.toStdString().c_str(), CM_OVERWRITE, errorMessage, 256);
